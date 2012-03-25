@@ -1,0 +1,97 @@
+Index: daylife.php
+===================================================================
+--- daylife.php	(revision 60332)
++++ daylife.php	(working copy)
+@@ -1,8 +1,8 @@
+ <?php
+ /*
+ Plugin Name: Daylife
+-Description:
+-Version: 0.1
++Description: Add high quality licensed images relevant to your blog posts from sources like Getty, AP, Reuters and US Presswire.
++Version: 1.0
+ License: GPL
+ Author: Daylife, Pete Mall
+ Author URI: http://daylife.com/
+Index: inc/options.php
+===================================================================
+--- inc/options.php	(revision 60332)
++++ inc/options.php	(working copy)
+@@ -24,12 +24,12 @@
+ 		$screen->add_help_tab( array(
+ 			'id'      => 'daylife-licenses',
+ 			'title'   => __( 'Licenses & Pricing', 'daylife' ),
+-			'content' => __( '<p>This plugin helps you find licensed images from sources like Getty, AP, Reuters and more. See the complete list of all the content partners <a href="http://www.daylife.com/about-us/our-partnerships/">here</a>. To learn more about these Image Licenses and their pricing, drop an email to getdaylife@daylife.com.</p>', 'dayflife' )
++			'content' => __( '<p>This plugin helps you find licensed images from sources like Getty, AP, Reuters and more. See the complete list of all the content partners <a href="http://www.daylife.com/about-us/our-partnerships/">here</a>. To learn more about these Image Licenses and their pricing, drop an email to <a href="mailto:getdaylife@daylife.com">getdaylife@daylife.com</a>.</p>', 'dayflife' )
+ 		) );
+ 		$screen->add_help_tab( array(
+ 			'id'      => 'daylife-getting-started',
+ 			'title'   => __( 'Getting Started', 'daylife' ),
+-			'content' => __( '<p>Please drop an email to getdaylife@daylife.com, and they will set your Plugin Settings - your Accesskey, SharedSecret and a Source Filter with access to your licensed sources.</p>', 'dayflife' )
++			'content' => __( '<p>Please drop an email to <a href="mailto:getdaylife@daylife.com">getdaylife@daylife.com</a>, and they will set your Plugin Settings - your Accesskey, SharedSecret and a Source Filter with access to your licensed sources.</p>', 'dayflife' )
+ 		) );
+ 		$screen->set_help_sidebar( __( '<p><strong>For more information:</strong></p><p><a href="http://www.daylife.com/">Daylife</a></p>', 'daylife' ) );
+ 	}
+@@ -53,8 +53,7 @@
+ 	public function sanitize_settings( $options ) {
+ 		foreach ( $options as $option_key => &$option_value ) {
+ 			switch ( $option_key ) {
+-				case 'access_key' :
+-				case 'shared_secret' :
++				default:
+ 					$option_value = esc_attr( $option_value );
+ 					break;
+ 			}
+@@ -73,6 +72,7 @@
+ 		<div class="wrap">
+ 			<?php screen_icon( 'daylife' ); ?>
+ 			<h2><?php _e( 'Daylife Settings', 'daylife' ); ?></h2>
++			 <p><?php _e( 'This plugin helps you find licensed images from sources like Getty, AP, Reuters and more. See the complete list of all the content partners <a href="http://www.daylife.com/about-us/our-partnerships/">here</a>. To learn more about these Image Licenses and their pricing, drop an email to <a href="mailto:getdaylife@daylife.com">getdaylife@daylife.com</a>.', 'dayflife' ); ?></p>
+ 			<form method="post" action="options.php">
+ 				<?php
+ 					settings_fields( 'daylife_options' );
+Index: inc/meta-box.php
+===================================================================
+--- inc/meta-box.php	(revision 60332)
++++ inc/meta-box.php	(working copy)
+@@ -27,6 +27,7 @@
+ 		}
+ 		?><input type="text" id="daylife-search" name="daylife-search" size="16" value=""><?php
+ 		wp_nonce_field( 'daylife-search-nonce', 'daylife-search-nonce-field' );
++		wp_nonce_field( 'daylife-add-nonce', 'daylife-add-nonce-field' );
+ 		submit_button( __( 'Search', 'daylife' ), 'secondary', 'daylife-search-button', false );
+ 		submit_button( __( 'Suggest Images', 'daylife' ), 'secondary', 'daylife-suggest-button', false );
+ 		?><div class="daylife-response" style="display: none">Loading</div><?php
+@@ -117,12 +118,17 @@
+ 	}
+ 
+ 	public function image_load() {
++		check_ajax_referer( 'daylife-add-nonce', 'nonce' );
++		if ( ! current_user_can( 'upload_files' ) ) {
++			_e( "You don't have permissions to upload files.", 'daylife' );
++			die;
++		}
+ 		$_POST = stripslashes_deep( $_POST );
+-		$url = str_replace( '/45x45.jpg', '/600x600.jpg', $_POST['thumb_url'] );
+-		$attachment_id = $this->media_sideload_image_get_id( $url, $_POST['post_id'], $_POST['image_title'] );
++		$url = str_replace( '/45x45.jpg', '/600x600.jpg', esc_url_raw( $_POST['thumb_url'] ) );
++		$attachment_id = $this->media_sideload_image_get_id( $url, absint( $_POST['post_id'] ), sanitize_text_field( $_POST['image_title'] ) );
+ 
+ 		// Set caption to caption + credit
+-		wp_update_post( array( 'ID'=>$attachment_id, 'post_excerpt'=>$_POST['caption'] . "<br /><br />Credit: " . $_POST['credit'] ) );
++		wp_update_post( array( 'ID' => $attachment_id, 'post_excerpt' => wp_kses_post( $_POST['caption'] ) . "<br /><br />Credit: " . wp_kses_post( $_POST['credit'] ) ) );
+ 
+ 		$attachment = get_post( $attachment_id, ARRAY_A );
+ 		$attachment['image-size'] = 'full';
+Index: inc/daylife.js
+===================================================================
+--- inc/daylife.js	(revision 60332)
++++ inc/daylife.js	(working copy)
+@@ -37,6 +37,7 @@
+ 			var img = $(this).siblings( 'img' );
+ 			var data = {
+ 				action: 'daylife-image-load',
++				nonce: $('#daylife-add-nonce-field').val(),
+ 				daylife_url: img.attr( 'daylife_url' ),
+ 				caption: img.attr( 'caption' ),
+ 				credit: img.attr( 'credit' ),
