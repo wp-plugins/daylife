@@ -16,6 +16,9 @@ class Daylife_Options {
 
 	public function help() {
 		$screen = get_current_screen();
+		if ( ! method_exists( $screen, 'add_help_tab' ) )
+			return;
+
 		$screen->add_help_tab( array(
 			'id'      => 'daylife-about',
 			'title'   => __( 'About', 'daylife' ),
