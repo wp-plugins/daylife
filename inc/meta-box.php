@@ -28,7 +28,7 @@ class Daylife_Meta_Box {
 		?><input type="text" id="daylife-search" name="daylife-search" size="16" value=""><?php
 		wp_nonce_field( 'daylife-search-nonce', 'daylife-search-nonce-field' );
 		wp_nonce_field( 'daylife-add-nonce', 'daylife-add-nonce-field' );
-		submit_button( __( 'Search', 'daylife' ), 'secondary', 'daylife-search-button', false );
+		submit_button( __( 'Search Images', 'daylife' ), 'secondary', 'daylife-search-button', false );
 		submit_button( __( 'Suggest Images', 'daylife' ), 'secondary', 'daylife-suggest-button', false );
 		?><div class="daylife-response" style="display: none">Loading</div><?php
 	}
