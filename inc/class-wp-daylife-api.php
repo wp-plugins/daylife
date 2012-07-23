@@ -56,7 +56,7 @@ class WP_Daylife_API {
 			'offset'           => 0,
 			'limit'            => 8,
 			'start_time'       => strtotime( $this->_get_start_time() ),
-			'sort'             => 'relevance'
+			'sort'             => 'date'
 		);
 		$response = $this->request( 'search_getRelatedImages', wp_parse_args( $args, $defaults ) );
 		if ( $response )
