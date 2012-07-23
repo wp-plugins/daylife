@@ -141,9 +141,15 @@ class Daylife_Meta_Box {
 		$attachment = get_post( $attachment_id, ARRAY_A );
 		$attachment['image-size'] = 'full';
 		$attachment['url'] = '';//$_POST['daylife_url'];
+		add_filter( 'image_add_caption_shortcode', array( $this, 'image_add_caption_shortcode' ), null, 2 );
 		$to_editor = image_media_send_to_editor( wp_get_attachment_url( $attachment_id ), $attachment_id, $attachment );
+		remove_filter( 'image_add_caption_shortcode', array( $this, 'image_add_caption_shortcode' ), null, 2 );
 		echo $to_editor;
 		die;
+	}
+
+	public function image_add_caption_shortcode( $shcode, $html ) {
+		return preg_replace( '/ width="[\d]*" height="[\d]*"/', '', $shcode );
 	}
 }
 
