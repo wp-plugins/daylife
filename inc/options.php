@@ -44,6 +44,7 @@ class Daylife_Options {
 		add_settings_field( 'daylife-shared-secret', __( 'Shared Secret', 'daylife' ), array( $this, 'text_box' ), 'daylife-options', 'daylife-general', array( 'id' => 'daylife-shared-secret', 'name' => 'shared_secret' ) );
 		add_settings_field( 'daylife-source-filter-id', __( 'Source Filter ID', 'daylife' ), array( $this, 'text_box' ), 'daylife-options', 'daylife-general', array( 'id' => 'daylife-source-filter-id', 'name' => 'source_filter_id' ) );
 		add_settings_field( 'daylife-api-endpoint', __( 'Daylife API Endpoint', 'daylife' ), array( $this, 'text_box' ), 'daylife-options', 'daylife-general', array( 'id' => 'daylife-api-endpoint', 'name' => 'api_endpoint' ) );
+		add_settings_field( 'daylife-start-time', __( 'Search Images Within', 'daylife' ), array( $this, 'start_time_radio' ), 'daylife-options', 'daylife-general', array( 'id' => 'daylife-start-time', 'name' => 'start_time' ) );
 	}
 
 	public function text_box( $args ) {
@@ -51,6 +52,26 @@ class Daylife_Options {
 		if ( ! isset( $options[ $args['name'] ] ) )
 			$options[ $args['name'] ] = '';
 		?><input type="text" id="<?php echo esc_attr( $args['id'] ); ?>" name="daylife[<?php echo esc_attr( $args['name'] ); ?>]" value="<?php echo esc_attr( $options[ $args['name'] ] ); ?>" class="regular-text" /><?php
+	}
+
+	public function start_time_radio( $args ) {
+		$start_time_options = apply_filters( 'daylife-start-time-options', array(
+			'-2 years'  => __( 'Last Two Years', 'daylife' ),
+			'-1 year'   => __( 'Last Year', 'daylife' ),
+			'-6 months' => __( 'Last Six Months', 'daylife' ),
+			'-3 months' => __( 'Last Three Months', 'daylife' ),
+			'-1 months' => __( 'Last Month', 'daylife' ),
+			'-1 week'   => __( 'Last Week', 'daylife' ),
+		) );
+		$options = get_option( 'daylife', array() );
+		if ( ! isset( $options[ $args['name'] ] ) )
+			$options[ $args['name'] ] = '-1 year';
+		foreach ( $start_time_options as $opt_val => $opt_name ) {
+			?>
+			<input type="radio" id="<?php echo esc_attr( $args['id'] . '-' . sanitize_title_with_dashes( $opt_name ) ); ?>" name="daylife[<?php echo esc_attr( $args['name'] ); ?>]" value="<?php echo esc_attr( $opt_val ); ?>"<?php checked( $opt_val, $options[ $args['name'] ] ); ?> />
+			<label for=""><?php echo esc_html( $opt_name ); ?></label><br />
+			<?php
+		}
 	}
 
 	public function sanitize_settings( $options ) {

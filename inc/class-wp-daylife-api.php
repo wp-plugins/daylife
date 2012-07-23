@@ -13,6 +13,7 @@ class WP_Daylife_API {
 	var $shared_secret;
 	var $source_filter_id;
 	var $url;
+	private $_options;
 
 	const protocol = 'jsonrest';
 	const version = '4.10';
@@ -39,11 +40,22 @@ class WP_Daylife_API {
 		return json_decode( wp_remote_retrieve_body( $response ) );
 	}
 
+	private function _get_start_time() {
+		if ( empty( $this->_options ) )
+			$this->_options = get_option( 'daylife', array() );
+
+		if ( ! isset( $this->_options[ 'start_time' ] ) )
+			$this->_options[ 'start_time' ] = '-1 year';
+
+		return $this->_options[ 'start_time' ];
+	}
+
 	public function search_getRelatedImages( $args = array() ) {
 		$defaults = array(
 			'source_filter_id' => $this->source_filter_id,
 			'offset'           => 0,
 			'limit'            => 8,
+			'start_time'       => strtotime( $this->_get_start_time() ),
 			'sort'             => 'relevance'
 		);
 		$response = $this->request( 'search_getRelatedImages', wp_parse_args( $args, $defaults ) );
@@ -58,6 +70,7 @@ class WP_Daylife_API {
 			'source_filter_id' => $this->source_filter_id,
 			'offset'           => 0,
 			'limit'            => 8,
+			'start_time'       => strtotime( $this->_get_start_time() ),
 			'sort'             => 'relevance'
 		);
 		$response = $this->request( 'content_getRelatedImages', wp_parse_args( $args, $defaults ) );
