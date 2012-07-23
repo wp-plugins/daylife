@@ -50,8 +50,8 @@ jQuery( function($) {
 				send_to_editor(response);
 			});
 			return false;
-		});		
-		$('#daylife-paging').bind( 'click', function() {
+		});
+		$( '.tablenav a' ).bind( 'click.daylife-tablenav', function() {
 			var data = {
 				action: 'daylife-image-search',
 				nonce: $('#daylife-search-nonce-field').val(),

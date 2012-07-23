@@ -57,7 +57,7 @@ class Daylife_Meta_Box {
 		}
 
 		$next = 8 == count( $images ) ? $page + 1 : 0;
-		$prev = 0;//$next > 2 ? $page - 1 : 0;
+		$prev = $page >= 1 ? $page - 1 : false;
 
 		if ( !$images ) {
 			echo __( 'No images found.', 'daylife' );
@@ -67,9 +67,9 @@ class Daylife_Meta_Box {
 		if ( $next || $prev ) {
 			echo '<div class="tablenav">';
 			if ( $next )
-				echo '<div class="tablenav-pages"><a href="' . esc_url( '#' . $next ) . '" id="daylife-paging" class="next page-numbers">' . __( 'Next &raquo', 'daylife' ) . '</a></div>';
-			if ( $prev )
-				echo '<div class="tablenav-pages"><a href="' . esc_url( '#' . $prev ) . '" id="daylife-paging" class="prev page-numbers">' . __( '&laquo; Prev', 'daylife' ) . '</a></div>';
+				echo '<div class="tablenav-pages"><a href="' . esc_url( '#' . $next ) . '" id="daylife-paging-next" class="next page-numbers">' . __( 'Next &raquo;', 'daylife' ) . '</a></div>';
+			if ( false !== $prev )
+				echo '<div class="tablenav-pages"><a href="' . esc_url( '#' . $prev ) . '" id="daylife-paging-prev" class="prev page-numbers">' . __( '&laquo; Prev', 'daylife' ) . '</a></div>';
 			echo '</div>';
 		}
 
