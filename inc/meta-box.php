@@ -16,7 +16,13 @@ class Daylife_Meta_Box {
 	}
 
 	public function add_meta_box() {
-		add_meta_box( 'daylife-images', __( 'Daylife', 'daylife' ), array( $this, 'render_meta_box' ), 'post', 'normal', 'high' );
+		$options = get_option( 'daylife', array() );
+		if ( ! isset( $options[ 'post_types' ] ) )
+			$options[ 'post_types' ] = array( 'post' );
+
+		foreach ( $options[ 'post_types' ] as $post_type ) {
+			add_meta_box( 'daylife-images', __( 'Daylife', 'daylife' ), array( $this, 'render_meta_box' ), $post_type, 'normal', 'high' );
+		}
 	}
 
 	public function render_meta_box() {

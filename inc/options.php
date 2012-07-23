@@ -7,6 +7,7 @@ class Daylife_Options {
 		self::$instance = $this;
 		add_action( 'admin_menu', array( $this, 'add_menu_page' ) );
 		add_action( 'admin_init', array( $this, 'settings_init' ) );
+		add_action( 'daylife-supported-post-types', array( $this, 'daylife_supported_post_types' ) );
 	}
 
 	public function add_menu_page() {
@@ -45,6 +46,7 @@ class Daylife_Options {
 		add_settings_field( 'daylife-source-filter-id', __( 'Source Filter ID', 'daylife' ), array( $this, 'text_box' ), 'daylife-options', 'daylife-general', array( 'id' => 'daylife-source-filter-id', 'name' => 'source_filter_id' ) );
 		add_settings_field( 'daylife-api-endpoint', __( 'Daylife API Endpoint', 'daylife' ), array( $this, 'text_box' ), 'daylife-options', 'daylife-general', array( 'id' => 'daylife-api-endpoint', 'name' => 'api_endpoint' ) );
 		add_settings_field( 'daylife-start-time', __( 'Search Images Within', 'daylife' ), array( $this, 'start_time_radio' ), 'daylife-options', 'daylife-general', array( 'id' => 'daylife-start-time', 'name' => 'start_time' ) );
+		add_settings_field( 'daylife-post-types', __( 'Post Types Supported', 'daylife' ), array( $this, 'post_types_checkboxes' ), 'daylife-options', 'daylife-general', array( 'id' => 'daylife-post-types', 'name' => 'post_types' ) );
 	}
 
 	public function text_box( $args ) {
@@ -74,9 +76,37 @@ class Daylife_Options {
 		}
 	}
 
+	public function post_types_checkboxes( $args ) {
+		$post_types = apply_filters( 'daylife-supported-post-types', get_post_types( array(), 'objects' ) );
+
+		$options = get_option( 'daylife', array() );
+		if ( ! isset( $options[ $args['name'] ] ) )
+			$options[ $args['name'] ] = array( 'post' );
+
+		foreach ( $post_types as $post_type ) {
+			?>
+			<input type="checkbox" id="<?php echo esc_attr( $args['id'] . '-' . sanitize_title_with_dashes( $post_type->name ) ); ?>" name="daylife[<?php echo esc_attr( $args['name'] ); ?>][]" value="<?php echo esc_attr( $post_type->name ); ?>"<?php checked( in_array( $post_type->name, $options[ $args['name'] ] ) ); ?> />
+			<label for=""><?php echo esc_html( $post_type->labels->name ); ?></label><br />
+			<?php
+		}
+	}
+
+	public function daylife_supported_post_types( $post_types ) {
+		foreach( $post_types as $key => $post_type ) {
+			if ( in_array( $post_type->name, array( 'nav_menu_item', 'revision', 'attachment' ) ) )
+				unset( $post_types[$key] );
+		}
+		return $post_types;
+	}
+
 	public function sanitize_settings( $options ) {
 		foreach ( $options as $option_key => &$option_value ) {
 			switch ( $option_key ) {
+				case 'post_types':
+					foreach ( $option_value as &$val ) {
+						$val = esc_attr( $val );
+					}
+					break;
 				default:
 					$option_value = esc_attr( $option_value );
 					break;
