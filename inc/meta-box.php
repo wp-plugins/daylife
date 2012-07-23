@@ -25,7 +25,7 @@ class Daylife_Meta_Box {
 			echo sprintf( __( 'Please enter the API credentials for Daylife on the <a href="%s">settings screen</a>.', 'daylife' ), menu_page_url( 'daylife-options', false ) );
 			return;
 		}
-		?><input type="text" id="daylife-search" name="daylife-search" size="16" value=""><?php
+		?><input type="text" id="daylife-search" name="daylife-search" size="16" value="" class="widefat"><?php
 		wp_nonce_field( 'daylife-search-nonce', 'daylife-search-nonce-field' );
 		wp_nonce_field( 'daylife-add-nonce', 'daylife-add-nonce-field' );
 		submit_button( __( 'Search Images', 'daylife' ), 'secondary', 'daylife-search-button', false );
