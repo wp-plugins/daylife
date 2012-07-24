@@ -34,21 +34,23 @@ jQuery( function($) {
 		$('.daylife-response').show();
 		$('.daylife-response').html( response );
 		$('.daylife-response button').click( function() {
-			var img = $(this).siblings( 'img' );
+			var img = $( $(this).siblings( 'img' )[0] );
 			var data = {
 				action: 'daylife-image-load',
 				nonce: $('#daylife-add-nonce-field').val(),
-				daylife_url: img.attr( 'daylife_url' ),
-				caption: img.attr( 'caption' ),
-				credit: img.attr( 'credit' ),
-				image_title: img.attr( 'image_title' ),
-				thumb_url: img.attr( 'thumb_url' ),
-				url: img.attr( 'url' ),
+				daylife_url: img.data( 'daylife_url' ),
+				caption: img.data( 'caption' ),
+				credit: img.data( 'credit' ),
+				image_title: img.data( 'image_title' ),
+				thumb_url: img.data( 'thumb_url' ),
+				url: img.data( 'url' ),
+				width: img.data( 'width' ),
+				height: img.data( 'height' ),
 				post_id: $('#post_ID').val()
 			}
 			$.post(ajaxurl, data, function(response) {
 				send_to_editor(response);
-			});
+			})
 			return false;
 		});
 		$( '.tablenav a' ).bind( 'click.daylife-tablenav', function() {
