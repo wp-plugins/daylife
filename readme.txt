@@ -1,8 +1,8 @@
 === Daylife ===
 Contributors: PeteMall
 Requires at least: 3.1
-Tested up to: 3.4
-Stable tag: 1.0
+Tested up to: 3.4.1
+Stable tag: 1.1
 
 Add high quality licensed images relevant to your blog posts from sources like Getty, AP, Reuters and US Presswire.
 
@@ -24,7 +24,19 @@ Add high quality licensed images relevant to your blog posts from sources like G
 1. Daylife Meta Box
 2. Plugin Settings
 
+== Upgrade Notice ==
+
+= 1.1 =
+Maintain aspect ratio on all images, support for all post types, several bug fixes
+
 == Changelog ==
+
+= 1.1 =
+* Maintain aspect ratio on all images
+* Fix previous page button bug
+* Support for all post types
+* Only allow HTML in captions on WP 3.4 and newer
+* Show caption, source, and date on image hover
 
 = 1.0 =
 * Initial checkin.
