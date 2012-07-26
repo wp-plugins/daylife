@@ -2,7 +2,7 @@
 /*
 Plugin Name: Daylife
 Description: Add high quality licensed images relevant to your blog posts from sources like Getty, AP, Reuters and US Presswire.
-Version: 1.0
+Version: 1.1
 License: GPL
 Author: Daylife, Pete Mall
 Author URI: http://daylife.com/
